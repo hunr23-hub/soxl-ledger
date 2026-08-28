@@ -6,7 +6,10 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#EFF1F3">
 <title>무한매수법 장부</title>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ctext y=%22.9em%22 font-size=%2290%22%3E🔁%3C/text%3E%3C/svg%3E">
+<link rel="icon" href="icon-toss.png">
+<link rel="apple-touch-icon" href="icon-toss.png">
+<meta name="apple-mobile-web-app-title" content="무한매수">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <style>
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap');
 
@@ -572,7 +575,7 @@ label.f input::placeholder{color:var(--ink-3);opacity:.7}
     var v = derive();
     app.innerHTML = '<div class="shell">' + header(v) + '<main>' +
       ({ today: todayTab, cycle: cycleTab, log: logTab, month: monthTab }[tab])(v) +
-      '</main><nav>' + nav('today', '오늘') + nav('cycle', '회차') + nav('log', '매매') + nav('month', '월별') +
+      '</main><nav>' + nav('today', '오늘') + nav('log', '매매') + nav('month', '월별') + nav('cycle', '차수') +
       '</nav></div><div class="toast" id="toast"></div>';
     applyCalc(v);
   }
@@ -592,7 +595,7 @@ label.f input::placeholder{color:var(--ink-3);opacity:.7}
     var fb = need ? '<button class="fillbar" data-fill="' + need + '"><span class="fb-t">' + md(need) + ' 종가가 비어 있어요</span><span class="fb-a">입력하기 &rsaquo;</span></button>' : '';
     var c = v.cur, h = fb;
     if (!c) {
-      h += '<div class="card"><div class="card-b"><div class="empty">진행 중인 회차가 없어요.<br>회차 탭에서 새 회차를 시작하세요.</div></div></div>';
+      h += '<div class="card"><div class="card-b"><div class="empty">진행 중인 차수가 없어요.<br>차수 탭에서 새 차수를 시작하세요.</div></div></div>';
       return h + settingsCard() + backupBar();
     }
     var cy = c.c;
@@ -600,7 +603,7 @@ label.f input::placeholder{color:var(--ink-3);opacity:.7}
       : (c.half ? '<span class="half">전반전</span>' : '<span class="half">후반전</span>')) +
       (c.c.mode ? '<span class="manual">수동</span>' : '');
     h += '<section class="hero">' +
-      '<div class="lab">' + (cy.no || '') + '회차 · ' + c.dur + '일째' + modeLab + '</div>' +
+      '<div class="lab">' + (cy.no || '') + '차 · ' + c.dur + '일째' + modeLab + '</div>' +
       '<div class="pills">' +
       '<div class="pill t"><span class="pl">T 값</span><b class="num">' +
       (c.T === null ? '—' : c.T.toFixed(2)) + '<i>회</i></b></div>' +
@@ -659,7 +662,7 @@ label.f input::placeholder{color:var(--ink-3);opacity:.7}
           '종가가 <b>' + usd(c.exitPrice) + '</b>(평단 −' + c.target + '%)를 넘어서면 일반모드로 자동 복귀합니다.</div>';
       }
     } else if (!c.useUnit || !c.useAvg) {
-      h += '<div class="note">원금과 평단이 있어야 주문을 계산해요. 회차 탭에서 <b>원금</b>을 넣어주세요.</div>';
+      h += '<div class="note">원금과 평단이 있어야 주문을 계산해요. 차수 탭에서 <b>원금</b>을 넣어주세요.</div>';
     } else {
       if (c.half) {
         h += ordCard('b', 'LOC 매수', '별지점', c.useUnit / 2, c.star) +
@@ -676,7 +679,7 @@ label.f input::placeholder{color:var(--ink-3);opacity:.7}
     h += '</div></section>';
 
     h += priceCard();
-    h += '<section class="card"><div class="card-h"><h2>이번 회차</h2><div class="aside">' + c.rows.length + '일</div></div>' +
+    h += '<section class="card"><div class="card-h"><h2>이번 차수</h2><div class="aside">' + c.rows.length + '일</div></div>' +
       '<div class="grid2">' +
       cell('매수 누적', usd(c.buyAmt)) + cell('보유 수량', qty(c.usePosQ) + '주') +
       cell('실현 손익', '<span class="' + cls(c.pnl) + '">' + usd(c.pnl, true) + '</span>') +
@@ -722,20 +725,20 @@ label.f input::placeholder{color:var(--ink-3);opacity:.7}
       '<div class="note" style="margin-top:10px">무한매수법 <b>V4.0</b> 규칙이에요. <b>T > ' +
       ((n(S.settings.split) || 20) - 1) + '</b>이면 리버스모드로 자동 전환되고, 그때 별지점은 <b>직전 5거래일 종가 평균</b>이 됩니다 ' +
       '(매수는 그 아래 LOC, 매도는 그 위에서 보유 ÷ ' + ((n(S.settings.split) || 20) === 20 ? 10 : 20) + ').<br>' +
-      '보유수량·평단·1회 투자금이 FIRE-GATE와 다르면 <b>회차 탭에서 직접 넣으세요</b> — 넣은 값이 우선합니다.</div>' +
+      '보유수량·평단·1회 투자금이 FIRE-GATE와 다르면 <b>차수 탭에서 직접 넣으세요</b> — 넣은 값이 우선합니다.</div>' +
       '</div></section>';
   }
 
   /* ------- 회차 ------- */
   function cycleTab(v) {
     var list = v.res.slice().reverse(), more = list.length - lim.cycle;
-    var h = '<section class="card"><div class="card-h"><h2>회차 기록</h2><div class="aside">' + v.res.length + '회</div></div>' +
-      '<div class="addbar top"><button class="btn wide pri" data-add="cycle">+ 새 회차 시작</button></div><div class="rows">';
-    if (!list.length) h += '<div class="empty">회차를 추가해 주세요.</div>';
+    var h = '<section class="card"><div class="card-h"><h2>차수 기록</h2><div class="aside">' + v.res.length + '회</div></div>' +
+      '<div class="addbar top"><button class="btn wide pri" data-add="cycle">+ 새 차수 시작</button></div><div class="rows">';
+    if (!list.length) h += '<div class="empty">차수를 추가해 주세요.</div>';
     list.slice(0, lim.cycle).forEach(function (x) {
       var i = S.cycles.indexOf(x.c), isOpen = openC === i;
       h += '<div class="tcard" data-openc="' + i + '" aria-expanded="' + isOpen + '">' +
-        '<div class="l1"><span class="dt">' + (x.c.no || '?') + '회차</span>' +
+        '<div class="l1"><span class="dt">' + (x.c.no || '?') + '차</span>' +
         '<span class="kr num">' + md(x.c.start) + ' → ' + (x.c.end ? md(x.c.end) : '진행중') + '</span>' +
         '<span class="chg num ' + (x.open ? cls(x.openPnl) : cls(x.rate)) + '">' +
         (x.open ? usd(x.openPnl, true) : pct(x.rate, true)) + '</span></div>' +
@@ -748,14 +751,14 @@ label.f input::placeholder{color:var(--ink-3);opacity:.7}
     });
     h += '</div>' + (more > 0 ? '<div class="morebar"><button class="btn wide" data-more="cycle">이전 ' + more + '회 더 보기</button></div>' : '') +
       '</section>' +
-      '<div class="note" style="padding:0 4px">회차는 직접 넣으세요. <b>시작일과 종료일 사이의 매매</b>가 그 회차로 잡혀요. 종료일을 비워두면 진행 중인 회차가 됩니다.</div>';
+      '<div class="note" style="padding:0 4px">차수는 직접 넣으세요. <b>시작일과 종료일 사이의 매매</b>가 그 차수로 잡혀요. 종료일을 비워두면 진행 중인 차수가 됩니다.</div>';
     return h;
   }
   function cycleEd(i, x) {
     var c = S.cycles[i];
     return '<div class="ed" data-stop="1">' +
       '<div class="fgrid f3">' +
-      fld('회차', 'cycles', i, 'no', c.no, 'num', '1') +
+      fld('차수', 'cycles', i, 'no', c.no, 'num', '1') +
       fld('시작일', 'cycles', i, 'start', c.start || '', 'date') +
       fld('종료일', 'cycles', i, 'end', c.end || '', 'date') +
       '</div>' +
@@ -826,7 +829,7 @@ label.f input::placeholder{color:var(--ink-3);opacity:.7}
       h += '<div class="tcard" data-open="' + i + '" aria-expanded="' + isOpen + '">' +
         '<div class="l1"><span class="dt num">' + md(r.d) + '</span>' +
         '<span class="kr num">국내 ' + md(r.t.ad || krDate(r.d)) + '</span>' +
-        (o.c ? '<span class="cl">' + (o.c.no || '?') + '회차</span>' : '<span class="cl" style="color:var(--up)">회차 없음</span>') +
+        (o.c ? '<span class="cl">' + (o.c.no || '?') + '차</span>' : '<span class="cl" style="color:var(--up)">차수 없음</span>') +
         '<span class="chg num">' + (r.avg ? '평단 ' + usd(r.avg) : '') + '</span></div>' +
         '<div class="l2">' +
         (B.q ? '<span class="tag b">매수 ' + qty(B.q) + '</span><span class="num">' + usd(B.avg) + '</span>' : '') +
@@ -879,20 +882,20 @@ label.f input::placeholder{color:var(--ink-3);opacity:.7}
     var h = '<section class="hero"><div class="lab">누적 실현 손익</div>' +
       '<div class="big num ' + cls(v.totalPnl) + '">' + usd(v.totalPnl, true) + '</div>' +
       '<div class="sub num">' + krw(v.totalKRW, true) + '</div>' +
-      '<div class="grid2">' + cell('종료 회차', v.res.filter(function (x) { return !x.open; }).length + '회') +
+      '<div class="grid2">' + cell('종료 차수', v.res.filter(function (x) { return !x.open; }).length + '회') +
       cell('현재 환율', (n(S.settings.fxNow) || 0).toLocaleString('ko-KR')) + '</div></section>';
     h += '<section class="card"><div class="card-h"><h2>월별 실현손익</h2></div><div class="rows">';
-    if (!v.months.length) h += '<div class="empty">아직 종료된 회차가 없어요.</div>';
+    if (!v.months.length) h += '<div class="empty">아직 종료된 차수가 없어요.</div>';
     v.months.slice().reverse().forEach(function (m) {
       var y = m.k.split('-');
       h += '<div class="row" style="grid-template-columns:1fr auto">' +
         '<div><div style="font-weight:600;font-size:13.5px">' + y[0] + '년 ' + (+y[1]) + '월</div>' +
-        '<div style="font-size:11.5px;color:var(--ink-3)">' + m.n + '회차 종료</div></div>' +
+        '<div style="font-size:11.5px;color:var(--ink-3)">' + m.n + '차수 종료</div></div>' +
         '<div style="text-align:right"><div class="num ' + cls(m.usd) + '" style="font-weight:600">' + usd(m.usd, true) + '</div>' +
         '<div class="num" style="font-size:11.5px;color:var(--ink-3)">' + krw(m.usd * (n(S.settings.fxNow) || 0), true) + '</div></div></div>';
     });
     h += '</div></section>';
-    h += '<section class="card"><div class="card-h"><h2>회차별 수익률</h2></div><div class="rows">';
+    h += '<section class="card"><div class="card-h"><h2>차수별 수익률</h2></div><div class="rows">';
     v.res.filter(function (x) { return !x.open; }).slice().reverse().forEach(function (x) {
       h += '<div class="row" style="grid-template-columns:auto 1fr auto">' +
         '<div style="font-weight:600;font-size:13px">' + (x.c.no || '?') + '회</div>' +
