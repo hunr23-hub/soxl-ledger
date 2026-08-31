@@ -2,8 +2,12 @@ name: 종가·환율 자동 갱신
 
 on:
   schedule:
-    - cron: "10 22 * * 0-4"
-  workflow_dispatch:
+    # 평일 07:00 KST (= 전날 22:00 UTC)
+    - cron: "0 22 * * 0-4"
+    # 예비: 평일 09:00 KST — 7시에 조회가 실패했을 때만 의미가 있고,
+    # 이미 최신이면 커밋하지 않고 그냥 끝난다.
+    - cron: "0 0 * * 1-5"
+  workflow_dispatch:        # 탭에서 손으로 돌릴 수도 있게
 
 permissions:
   contents: write
